@@ -102,6 +102,7 @@
         <slf4j.version>2.0.7</slf4j.version>
         <log4j2.version>2.20.0</log4j2.version>
         <checkstyle.version>9.2.1</checkstyle.version>
+        <google.cloud.nio.version>0.126.18</google.cloud.nio.version>
     </properties>
   
     <build>

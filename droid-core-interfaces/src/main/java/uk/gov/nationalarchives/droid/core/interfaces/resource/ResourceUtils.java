@@ -35,10 +35,14 @@ import java.io.FileFilter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.RandomAccessFile;
+import java.net.URI;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
 
 import org.apache.commons.io.FilenameUtils;
+
+import com.google.cloud.storage.contrib.nio.CloudStoragePath;
 
 import net.byteseek.io.reader.cache.DoubleCache;
 import net.byteseek.io.reader.cache.LeastRecentlyUsedCache;
@@ -75,6 +79,8 @@ public final class ResourceUtils {
     private static final int UNSIGNED_RIGHT_SHIFT_BY_18 = 18;
     private static final int UNSIGNED_RIGHT_SHIFT_BY_25 = 25;    
     private static final int ARRAYLENGTH = 5;
+
+    private static final String[] CLOUD_SCHEMAS = {"gs"};
 
     /**
      * Private constructor to prevent construction of static utility class.
@@ -292,5 +298,30 @@ public final class ResourceUtils {
                 }
             }
         }
-    }    
+    }
+    
+    /**
+     * Determine if a resource is in the cloud.
+     * 
+     * @param location The URI of the resource
+     * @return true if location refers to a cloud location, false otherwise
+     */
+    public static boolean isCloudResource(String location) {
+        boolean isCloud = false;
+        String scheme = URI.create(location).getScheme();
+        if (scheme != null) {
+            isCloud = Arrays.stream(CLOUD_SCHEMAS).anyMatch(scheme.toLowerCase()::equals);
+        }
+        return isCloud;
+    }
+
+    /**
+     * Determine if a Path is in the cloud.
+     * 
+     * @param path The URI of the resource
+     * @return true if path is a cloud resource, false otherwise
+     */
+    public static boolean isCloudResource(Path path) {
+        return (path instanceof CloudStoragePath);
+    }
 }

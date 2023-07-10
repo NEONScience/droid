@@ -29,43 +29,44 @@
  * NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
+
 package uk.gov.nationalarchives.droid.profile;
 
-import java.nio.file.Files;
+import java.net.URI;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 
-import uk.gov.nationalarchives.droid.core.interfaces.resource.ResourceUtils;
+import javax.xml.bind.annotation.XmlRootElement;
+
 
 /**
- * Creates either a file or a directory profile resource from its file path, and whether it is a recursive profile
- * resource in the case of directories.
- *
- * @author rflitcroft
- *
+ * @author ddlenz
+ * 
  */
-public class ProfileResourceFactory {
+@XmlRootElement(name = "CloudObject")
+public class CloudObjectProfileResource extends AbstractProfileResource {
 
     /**
-     * Resolves a location string to a profile resource.
-     * @param location the resources location string
-     * @param recursive if the resource should be recursed
-     * @return a new profile resource
-     * @throws IllegalArgumentException if the location passed in is not a file or a directory.
+     * Default Constructor.
      */
-    public AbstractProfileResource getResource(String location, boolean recursive) {
-        final Path f = Paths.get(location);
-        if (Files.isRegularFile(f)) {
-            return new FileProfileResource(f);
-        } else if (Files.isDirectory(f)) {
-            return new DirectoryProfileResource(f, recursive);
-        } else if (ResourceUtils.isCloudResource(location)) {
-            return new CloudObjectProfileResource(location);
-        } else {
-            throw new IllegalArgumentException(
-                    String.format("Unknown location [%s]", location));
-        }
+    CloudObjectProfileResource() {
     }
 
-}
+    /**
+     * @param location
+     */
+    public CloudObjectProfileResource(String location) {
+        setUri(URI.create(location));
+    }
 
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public boolean isDirectory() {
+        return false;
+    }
+
+    @Override
+    public void setSize(Path filePath) {
+    }
+}

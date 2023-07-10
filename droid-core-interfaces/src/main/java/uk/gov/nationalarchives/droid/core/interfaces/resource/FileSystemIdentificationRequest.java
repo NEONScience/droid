@@ -33,11 +33,13 @@ package uk.gov.nationalarchives.droid.core.interfaces.resource;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.nio.file.Path;
 
 import net.byteseek.io.reader.ReaderInputStream;
 import net.byteseek.io.reader.WindowReader;
 import net.byteseek.io.reader.FileReader;
+import net.byteseek.io.reader.InputStreamReader;
 import net.byteseek.io.reader.cache.TopAndTailFixedLengthCache;
 import net.byteseek.io.reader.cache.WindowCache;
 import uk.gov.nationalarchives.droid.core.interfaces.IdentificationRequest;
@@ -78,13 +80,20 @@ public class FileSystemIdentificationRequest implements IdentificationRequest<Pa
      */
     @Override
     public final void open(final Path theFile) throws IOException {
-        // Use a caching strategy that uses soft references, to allow the GC to reclaim
-        // cached file bytes in low memory conditions.
-        final WindowCache cache = new TopAndTailFixedLengthCache(theFile.toFile().length(), TOP_TAIL_BUFFER_CAPACITY);
-        fileReader = new FileReader(theFile.toFile(), cache);
-        ((FileReader) fileReader).useSoftWindows(true);
-        this.file = theFile;
-        fileReader.getWindow(0); // force read of first block to generate any IO exceptions.
+        if (!(ResourceUtils.isCloudResource(theFile))) {
+            // Use a caching strategy that uses soft references, to allow the GC to reclaim
+            // cached file bytes in low memory conditions.
+            final WindowCache cache = new TopAndTailFixedLengthCache(theFile.toFile().length(), TOP_TAIL_BUFFER_CAPACITY);
+            fileReader = new FileReader(theFile.toFile(), cache);
+            ((FileReader) fileReader).useSoftWindows(true);
+            this.file = theFile;
+            fileReader.getWindow(0); // force read of first block to generate any IO exceptions.
+        } else {
+            // Read cloud object as stream
+            fileReader = new InputStreamReader(Files.newInputStream(theFile));
+            this.file = theFile;
+            fileReader.getWindow(0); // force read of first block to generate any IO exceptions.
+        }
     }
 
     /**
