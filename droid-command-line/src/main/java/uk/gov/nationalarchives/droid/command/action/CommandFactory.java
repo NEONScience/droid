@@ -31,6 +31,8 @@
  */
 package uk.gov.nationalarchives.droid.command.action;
 
+import java.io.IOException;
+
 import org.apache.commons.cli.CommandLine;
 
 /**
@@ -88,6 +90,16 @@ public interface CommandFactory {
      * @throws CommandLineSyntaxException if the command line args were invalid
      */
     DroidCommand getProfileCommand(CommandLine cli) throws CommandLineSyntaxException;
+
+    
+    /**
+     * @param cli the command line;
+     * @return a new {@link DroidCommand}
+     * @throws CommandLineSyntaxException if the command line args were invalid
+     * @throws IOException
+     */
+    DroidCommand getResourceListCommand(CommandLine cli) throws CommandLineSyntaxException, IOException;
+
 
     /**
      * @param cli the command line;

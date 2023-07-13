@@ -119,6 +119,9 @@ public final class I18N {
     /** Run without a profile. */
     public static final String RUN_NO_PROFILE_HELP = "no_profile.run.help";
 
+    /** Run a profile using list of resources. */
+    public static final String RESOURCE_LIST_HELP = "resource.list.help";
+
     /** Run a profile outputting to a csv file or console. */
     public static final String RUN_FILE_PROFILE_HELP = "profile.run.file.help";
 

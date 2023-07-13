@@ -31,6 +31,7 @@
  */
 package uk.gov.nationalarchives.droid.command.action;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -256,6 +257,15 @@ public enum CommandLineParam {
         }
     },
 
+    /** Runs a profile with the specified resource list. */
+    RESOURCE_LIST("L", "resource-list", true, 1, I18N.RESOURCE_LIST_HELP, "resourcelist") {
+        @Override
+        public DroidCommand getCommand(CommandFactory commandFactory, CommandLine cli)
+                throws CommandLineSyntaxException, IOException {
+            return commandFactory.getResourceListCommand(cli);
+        }
+    },
+
     /** Signature file. */
     SIGNATURE_FILE("Ns", "signature-file", true, 1, I18N.SIGNATURE_FILE_HELP, filename()) {
         @Override
@@ -389,6 +399,7 @@ public enum CommandLineParam {
         addTopLevelCommand(CONFIGURE_DEFAULT_SIGNATURE_VERSION);
         addTopLevelCommand(LIST_SIGNATURE_VERSIONS);
         addTopLevelCommand(LIST_REPORTS);
+        addTopLevelCommand(RESOURCE_LIST);
     }
 
     private static final String FILENAME = "filename";
@@ -429,9 +440,10 @@ public enum CommandLineParam {
      * @param cli the command line
      * @throws CommandLineException command parse exception.
      * @return a droid command.
+     * @throws IOException
      */
     public abstract DroidCommand getCommand(CommandFactory commandFactory, CommandLine cli)
-            throws CommandLineException;
+            throws CommandLineException, IOException;
 
     /**
      * {@inheritDoc}

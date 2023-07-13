@@ -56,6 +56,10 @@ import uk.gov.nationalarchives.droid.core.interfaces.filter.Filter;
 import uk.gov.nationalarchives.droid.core.interfaces.filter.FilterCriterion;
 import uk.gov.nationalarchives.droid.export.interfaces.ExportOptions;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+
 /**
  * Creates command objects from the cli.
  *
@@ -493,6 +497,22 @@ public class CommandFactoryImpl implements CommandFactory {
         return command;
     }
 
+    @Override
+    public DroidCommand getResourceListCommand(final CommandLine cli) throws CommandLineSyntaxException, IOException {
+        final ProfileRunCommand command = context.getProfileRunCommand();
+        PropertiesConfiguration overrides = getOverrideProperties(cli);
+        processCommandLineArchiveFlags(cli, overrides);
+        command.setResources(getResourceList(cli));
+        command.setDestination(getDestination(cli, overrides)); // will also set the output csv file in overrides if present.
+        command.setRecursive(cli.hasOption(CommandLineParam.RECURSIVE.toString()));
+        command.setProperties(overrides); // must be called after we set destination.
+        command.setContainerSignatureFile(cli.getOptionValue(CommandLineParam.CONTAINER_SIGNATURE_FILE.toString()));
+        command.setSignatureFile(cli.getOptionValue(CommandLineParam.SIGNATURE_FILE.toString()));
+        command.setResultsFilter(getResultsFilter(cli));
+        command.setIdentificationFilter(getIdentificationFilter(cli));
+        return command;
+    }
+
     private PropertiesConfiguration createProperties(String[] properties) {
         PropertiesConfiguration result = new PropertiesConfiguration();
         for (String property : properties) {
@@ -532,4 +552,12 @@ public class CommandFactoryImpl implements CommandFactory {
         criteria.add(criterion);
         return new BasicFilter(criteria, isNarrowed);
     }
+
+    private String[] getResourceList(final CommandLine cli) throws CommandLineSyntaxException, IOException {
+        String source = cli.getOptionValue(CommandLineParam.RESOURCE_LIST.toString());
+        List<String> resourceList = Files.readAllLines(Paths.get(source));
+        String[] resources = resourceList.toArray(new String[resourceList.size()]);
+        return resources;
+    }
+
 }
