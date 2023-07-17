@@ -86,6 +86,8 @@ public class HelpCommand implements DroidCommand {
         formatter.printOptions(writer, WRAP_WIDTH,
                 CommandLineParam.profileRunSubOptions(), 5, 7);
         formatter.printOptions(writer, WRAP_WIDTH,
+                CommandLineParam.getOptions(CommandLineParam.RESOURCE_LIST), 2, 3);
+        formatter.printOptions(writer, WRAP_WIDTH,
                 CommandLineParam.getOptions(CommandLineParam.EXPORT_ONE_ROW_PER_FILE), 2, 9);
         formatter.printOptions(writer, WRAP_WIDTH,
                 CommandLineParam.exportSubOptions(), 5, 7);
