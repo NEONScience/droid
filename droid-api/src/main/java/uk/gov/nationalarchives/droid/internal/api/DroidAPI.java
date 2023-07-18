@@ -33,6 +33,7 @@ package uk.gov.nationalarchives.droid.internal.api;
 
 import java.nio.file.Files;
 import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 import java.util.List;
 import java.util.Optional;
@@ -124,6 +125,16 @@ public final class DroidAPI {
      * @throws IOException If File can't be read or there is IO error.
      */
     public List<ApiResult> submit(final Path file) throws IOException {
+        return submit(file, null);
+    }
+
+    /**
+     * @param file Full path to file for identification.
+     * @param stream An existing InputStream opened on the file.
+     * @return File identification result. File can have multiple matching signatures.
+     * @throws IOException If File can't be read or there is IO error.
+     */
+    public List<ApiResult> submit(final Path file, InputStream stream) throws IOException {
         final RequestMetaData metaData = new RequestMetaData(
                 Files.size(file),
                 Files.getLastModifiedTime(file).toMillis(),
@@ -137,7 +148,11 @@ public final class DroidAPI {
         IdentificationResultCollection resultCollection;
 
         try (final FileSystemIdentificationRequest request = new FileSystemIdentificationRequest(metaData, id)) {
-            request.open(file);
+            if (stream != null) {
+                request.open(file, stream);
+            } else {
+                request.open(file);
+            }
             String extension = request.getExtension();
 
             IdentificationResultCollection binaryResult = droidCore.matchBinarySignatures(request);

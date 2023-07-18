@@ -96,6 +96,15 @@ public class FileSystemIdentificationRequest implements IdentificationRequest<Pa
         }
     }
 
+    // /**
+    //  * Create request using an existing InputStream.
+    //  */
+    public final void open(final Path theFile, InputStream stream) throws IOException {
+        fileReader = new InputStreamReader(stream);
+        this.file = theFile;
+        fileReader.getWindow(0); // force read of first block to generate any IO exceptions.
+}
+
     /**
      * {@inheritDoc}
      */
